@@ -1,15 +1,22 @@
 const express = require('express');
+const morgan = require('morgan');
 const mongoose = require('mongoose');
+const { json } = require('body-parser');
 
 const app = express();
 
-mongoose.connect('mongodb://localhost/my-blog', { useMongoClient: true });
+app.use(morgan('dev'));
+
+mongoose.connect('mongodb://localhost/my-blog');
 mongoose.Promise = Promise;
 
 app.use(json());
 
+app.use('/api/users', require('./routes/users'));
+app.use('/api/blogs', require('./routes/blogs'));
+
 app.get('*', (req, res) => {
-    res.status(200).send('Hewwo');
+    res.status(200).send('Hewwo, this project is just a backend, you can interact with it by sending requests to /api/users and /api/blogs with postman.');
 });
 
 module.exports = app;

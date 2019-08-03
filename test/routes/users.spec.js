@@ -1,7 +1,7 @@
 /* global define, it, describe, beforeEach, document */
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require('../../server/app');
+const app = require('../../server/server');
 
 const { fakeUser, createUserInDB, nonExistentObjectId } = require('../lib/fake');
 
@@ -24,7 +24,7 @@ describe('/api/users', function () {
     it('GET /:id should respond with a user when a valid ID is passed', (done) => {
         createUserInDB().then(user => {
             chai.request(app)
-                .get(`/api/users/${user._id}`)
+                .get(`/api/users/:id=${user._id}`)
                 .end((err, res) => {
                     expect(res).to.have.status(200);
                     expect(res.body).to.be.instanceOf(Object);
@@ -36,7 +36,7 @@ describe('/api/users', function () {
 
     it('GET /:id should respond with 404 when an invalid ID is passed', (done) => {
         chai.request(app)
-            .get(`/api/users/${nonExistentObjectId}`)
+            .get(`/api/users/:id=${nonExistentObjectId}`)
             .end((err, res) => {
                 expect(res).to.have.status(404);
                 done();
@@ -55,7 +55,7 @@ describe('/api/users', function () {
                 const savedUserId = res.body._id;
 
                 chai.request(app)
-                    .get(`/api/users/${res.body._id}`)
+                    .get(`/api/users/:id=${res.body._id}`)
                     .end((err, res) => {
                         expect(res).to.have.status(200);
                         expect(err).to.be.null;
@@ -70,14 +70,14 @@ describe('/api/users', function () {
     it('PUT /:id should update a user', (done) => {
         createUserInDB().then(user => {
             chai.request(app)
-                .put(`/api/users/${user._id}`)
+                .put(`/api/users/:id=${user._id}`)
                 .send({ firstName: 'Jane', lastName: 'Doe' })
                 .end((err, res) => {
                     expect(err).to.be.null;
                     expect(res).to.have.status(204);
                     
                     chai.request(app)
-                        .get(`/api/users/${user._id}`)
+                        .get(`/api/users/:id=${user._id}`)
                         .end((err, res) => {
                             expect(err).to.be.null;
                             expect(res).to.have.status(200);
@@ -93,13 +93,13 @@ describe('/api/users', function () {
     it('DELETE /:id should delete a user', (done) => {
         createUserInDB().then(user => {
             chai.request(app)
-                .delete(`/api/users/${user._id}`)
+                .delete(`/api/users/:id=${user._id}`)
                 .end((err, res) => {
                     expect(err).to.be.null;
                     expect(res).to.have.status(200);
 
                     chai.request(app)
-                        .get(`/api/users/${user._id}`)
+                        .get(`/api/users/:id=${user._id}`)
                         .end((err, res) => {
                             expect(res).to.have.status(404);
                             done();
