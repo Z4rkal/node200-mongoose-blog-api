@@ -7,7 +7,7 @@ const app = express();
 
 app.use(morgan('dev'));
 
-mongoose.connect('mongodb://localhost/my-blog');
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/my-blog');
 mongoose.Promise = Promise;
 
 app.use(json());
